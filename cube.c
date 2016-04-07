@@ -2283,8 +2283,32 @@ static void demo_init_vk(struct demo *demo) {
         demo->queue_count * sizeof(VkQueueFamilyProperties));
     vkGetPhysicalDeviceQueueFamilyProperties(demo->gpu, &demo->queue_count,
                                              demo->queue_props);
-    // Find a queue that supports gfx
+    printf("Queue count %d\n", demo->queue_count);
     uint32_t gfx_queue_idx = 0;
+    for (gfx_queue_idx = 0; gfx_queue_idx < demo->queue_count;
+         gfx_queue_idx++) {
+        printf("%d\n", gfx_queue_idx);
+        if (demo->queue_props[gfx_queue_idx].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            printf("%s\n", "VK_QUEUE_GRAPHICS_BIT");
+        }
+        if (demo->queue_props[gfx_queue_idx].queueFlags & VK_QUEUE_COMPUTE_BIT)
+        {
+            printf("%s\n", "VK_QUEUE_COMPUTE_BIT");
+        }
+        if (demo->queue_props[gfx_queue_idx].queueFlags & VK_QUEUE_TRANSFER_BIT)
+        {
+            printf("%s\n", "VK_QUEUE_TRANSFER_BIT");
+        }
+        if (demo->queue_props[gfx_queue_idx].queueFlags & VK_QUEUE_SPARSE_BINDING_BIT)
+        {
+            printf("%s\n", "VK_QUEUE_SPARSE_BINDING_BIT");
+        }
+        fflush(stdout);
+    }
+
+    // Find a queue that supports gfx
+    gfx_queue_idx = 0;
     for (gfx_queue_idx = 0; gfx_queue_idx < demo->queue_count;
          gfx_queue_idx++) {
         if (demo->queue_props[gfx_queue_idx].queueFlags & VK_QUEUE_GRAPHICS_BIT)
@@ -2432,6 +2456,7 @@ static void demo_init_vk_swapchain(struct demo *demo) {
     if (formatCount == 1 && surfFormats[0].format == VK_FORMAT_UNDEFINED) {
         demo->format = VK_FORMAT_B8G8R8A8_UNORM;
     } else {
+        printf("Preferred format is %d\n", surfFormats[0].format);
         assert(formatCount >= 1);
         demo->format = surfFormats[0].format;
     }
@@ -2482,7 +2507,7 @@ static void demo_init(struct demo *demo, int argc, char **argv) {
         exit(1);
     }
 
-    demo_init_connection(demo);
+    //demo_init_connection(demo);
     demo_init_vk(demo);
 
     demo->width = 500;
